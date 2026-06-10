@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>CipherForge</title>
+<style>
+:root{--bg:#07090c;--panel:#10151d;--ink:#d8ffe8;--muted:#7ea991;--hot:#54ff8a;--warn:#ff3b81;--line:#223329}*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 20% 0,#16251f,#07090c 45%,#020304);color:var(--ink);font-family:ui-monospace,Consolas,Menlo,monospace;min-height:100vh}body:before{content:"";position:fixed;inset:0;pointer-events:none;background:linear-gradient(rgba(255,255,255,.025) 50%,rgba(0,0,0,.06) 50%);background-size:100% 4px;mix-blend-mode:overlay}.wrap{max-width:1200px;margin:auto;padding:22px}.brand{display:flex;gap:14px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-bottom:16px}.sig{letter-spacing:.18em;color:var(--hot);text-shadow:0 0 18px #54ff8a}.sub{color:var(--muted);font-size:13px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.panel{background:linear-gradient(180deg,rgba(16,21,29,.94),rgba(8,12,16,.96));border:1px solid var(--line);box-shadow:0 0 35px rgba(84,255,138,.06),inset 0 0 0 1px rgba(84,255,138,.03);border-radius:18px;padding:16px}.panel h2{margin:0 0 10px;font-size:14px;color:var(--hot);letter-spacing:.12em}textarea{width:100%;height:310px;resize:vertical;background:#05080b;color:var(--ink);border:1px solid #244432;border-radius:14px;padding:14px;font:15px/1.45 ui-monospace,Consolas,monospace;outline:none}textarea:focus{border-color:var(--hot);box-shadow:0 0 0 3px rgba(84,255,138,.08)}.controls{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:14px 0}.btn,select,input[type=range]{background:#0a1015;color:var(--ink);border:1px solid #244432;border-radius:12px;padding:10px;font-family:inherit}.btn{cursor:pointer}.btn:hover,.btn.on{border-color:var(--hot);box-shadow:0 0 18px rgba(84,255,138,.12);color:#fff}.btn.danger{border-color:#52233c;color:#ff9cc2}.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.range{flex:1;min-width:220px}.chips{display:flex;gap:8px;flex-wrap:wrap}.chip{font-size:12px;padding:8px 10px;border:1px solid #244432;border-radius:999px;background:#091017;color:var(--muted);cursor:pointer;user-select:none}.chip.on{color:#061008;background:var(--hot);border-color:var(--hot);box-shadow:0 0 20px rgba(84,255,138,.16)}.out{white-space:pre-wrap;min-height:310px;background:#05080b;border:1px solid #244432;border-radius:14px;padding:14px;overflow:auto;font:15px/1.45 ui-monospace,Consolas,monospace}.status{margin-top:12px;color:var(--muted);font-size:12px}.glitch{animation:j 1.6s infinite steps(2)}@keyframes j{0%,100%{text-shadow:0 0 12px #54ff8a}50%{text-shadow:2px 0 #ff3b81,-2px 0 #2ee7ff}}@media(max-width:850px){.grid{grid-template-columns:1fr}.controls{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand">
+    <div><h1 class="sig glitch">CIPHERFORGE</h1><div class="sub">local-first cursed text transformer · github deploy build</div></div>
+    <div class="sub" id="stats">idle</div>
+  </div>
+  <div class="panel">
+    <div class="row">
+      <select id="mode">
+        <option value="stack">Stacked mutation</option><option value="leet">L337 / hacker</option><option value="rune">Runic omen</option><option value="zalgo">Zalgo rot</option><option value="void">Void terminal</option><option value="royal">Mock scripture</option><option value="wide">Fullwidth</option><option value="morse">Morse bleed</option>
+      </select>
+      <label class="sub range">Intensity <input id="power" type="range" min="0" max="100" value="45"></label>
+      <button class="btn" id="copy">copy output</button><button class="btn danger" id="clear">clear</button>
+    </div>
+    <div class="status">Toggle layers below. The slider mutates in real time. No backend, no API, no corporate demon drinking your text.</div>
+  </div>
+  <div class="controls" id="chips"></div>
+  <div class="grid">
+    <div class="panel"><h2>INPUT</h2><textarea id="input" spellcheck="false" placeholder="Type normal words here and watch them crawl out wrong..."></textarea></div>
+    <div class="panel"><h2>OUTPUT</h2><div class="out" id="output"></div></div>
+  </div>
+  <div class="panel" style="margin-top:16px"><h2>PRESETS</h2><div class="row"><button class="btn preset" data-p="The tugboat moves through black water under a dead green moon.">maritime omen</button><button class="btn preset" data-p="Evolve. Adapt. Overcome.">driftmetal motto</button><button class="btn preset" data-p="Where is everyone? Something is here. Something is listening.">dark forest</button><button class="btn preset" data-p="Captain Stevo initiated forbidden protocol.">forbidden protocol</button></div><div class="status" id="note">CipherForge compact public build. Exact Claude archive can still be uploaded manually from the ZIP if desired.</div></div>
+</div>
+<script>
+const $=q=>document.querySelector(q), input=$('#input'), output=$('#output'), power=$('#power'), mode=$('#mode'), stats=$('#stats');
+const layers=[['leet','L337'],['mirror','mirror scars'],['wide','wide glyphs'],['rune','runes'],['zalgo','zalgo rot'],['binary','binary ghosts'],['morse','morse'],['case','case fracture'],['bracket','brackets'],['void','void tags'],['reverse','reverse words'],['redact','redaction']];
+const active=new Set(['leet','case']);
+const maps={leet:{a:'4',e:'3',i:'1',o:'0',s:'5',t:'7',b:'8',g:'9'},rune:{a:'ᚨ',b:'ᛒ',c:'ᚲ',d:'ᛞ',e:'ᛖ',f:'ᚠ',g:'ᚷ',h:'ᚺ',i:'ᛁ',j:'ᛃ',k:'ᚲ',l:'ᛚ',m:'ᛗ',n:'ᚾ',o:'ᛟ',p:'ᛈ',q:'ᛩ',r:'ᚱ',s:'ᛊ',t:'ᛏ',u:'ᚢ',v:'ᚡ',w:'ᚹ',x:'ᛪ',y:'ᛦ',z:'ᛉ'},wide:{' ':'　','!':'！','?':'？','.':'．',',':'，',':':'：',';':'；','(':'（',')':'）','-':'－'}};
+const zal=['̸','̷','̶','̴','̵','͟','͜','̲','̺','̯','̞','͈','͉','̝','̰','̳','̟','͇','̪','̬','̹','̦','̮','̱','̗','̘','̙','̜','̠','͎','͍','͓','͔','͕','͖','͙','͚','̣','̤','̥','̩','̫','̻','̼','ͅ','͇'];
+const morse={a:'.-',b:'-...',c:'-.-.',d:'-..',e:'.',f:'..-.',g:'--.',h:'....',i:'..',j:'.---',k:'-.-',l:'.-..',m:'--',n:'-.',o:'---',p:'.--.',q:'--.-',r:'.-.',s:'...',t:'-',u:'..-',v:'...-',w:'.--',x:'-..-',y:'-.--',z:'--..','0':'-----','1':'.----','2':'..---','3':'...--','4':'....-','5':'.....','6':'-....','7':'--...','8':'---..','9':'----.'};
+function chance(n){return Math.random()*100<n} function mapChars(s,map,p){return s.replace(/[\s\S]/g,c=>{let low=c.toLowerCase(),r=map[low]; if(!r||!chance(p))return c; return c===low?r:r.toUpperCase()})}
+function leet(s,p){return mapChars(s,maps.leet,p)} function rune(s,p){return mapChars(s,maps.rune,p)}
+function wide(s,p){return s.replace(/[\s\S]/g,c=>{if(c===' '&&chance(p))return '　'; if(maps.wide[c]&&chance(p))return maps.wide[c]; let code=c.charCodeAt(0); return code>32&&code<127&&chance(p)?String.fromCharCode(code+0xFEE0):c})}
+function zalgo(s,p){let n=Math.floor(p/22)+1;return s.replace(/[^\s]/g,c=>c+Array.from({length:chance(p)?n:0},()=>zal[Math.floor(Math.random()*zal.length)]).join(''))}
+function mirror(s,p){return s.split(/(\s+)/).map(w=>chance(p/2)?w+'|'+[...w].reverse().join(''):w).join('')}
+function binary(s,p){return s.replace(/\b\w+\b/g,w=>chance(p/3)?w+' ['+[...w].map(c=>c.charCodeAt(0).toString(2)).join(' ')+']':w)}
+function morseFn(s,p){return s.replace(/\b\w+\b/g,w=>chance(p/2)?w+' / '+[...w.toLowerCase()].map(c=>morse[c]||c).join(' '):w)}
+function caseFn(s,p){return [...s].map(c=>/[a-z]/i.test(c)&&chance(p)?(chance(50)?c.toUpperCase():c.toLowerCase()):c).join('')}
+function bracket(s,p){return s.replace(/\b\w+\b/g,w=>chance(p/2)?'⟦'+w+'⟧':w)}
+function voidFn(s,p){return s.replace(/\b\w+\b/g,w=>chance(p/3)?'NULL_'+w+'_VOID':w)}
+function reverse(s,p){return s.split(/(\s+)/).map(w=>/\w/.test(w)&&chance(p/2)?[...w].reverse().join(''):w).join('')}
+function redact(s,p){return s.replace(/\b\w{4,}\b/g,w=>chance(p/3)?'█'.repeat(Math.min(w.length,10)):w)}
+const funcs={leet,rune,wide,zalgo,mirror,binary,morse:morseFn,case:caseFn,bracket,void:voidFn,reverse,redact};
+function royal(s){return '⛧ CIPHER SCRIPTURE ⛧\n\n'+s.replace(/\b(the|a|an)\b/gi,'ye').replace(/\bI\b/g,'this vessel')+'\n\n—sealed in green fire—'}
+function voidMode(s){return '> SIGNAL_CAPTURED\n> SOURCE: UNKNOWN\n\n'+s.split('\n').map(x=>'[void] '+x).join('\n')+'\n\n> END_TRANSMISSION'}
+function transform(){let s=input.value, p=+power.value; if(!s.trim()){output.textContent=''; stats.textContent='idle'; return} let selected=[...active]; if(mode.value!=='stack')selected=[mode.value]; selected.forEach(k=>{if(funcs[k])s=funcs[k](s,p)}); if(mode.value==='royal')s=royal(s); if(mode.value==='void')s=voidMode(s); output.textContent=s; stats.textContent=`${input.value.length} chars · ${selected.length} layer(s) · intensity ${p}%`}
+function boot(){const box=$('#chips'); layers.forEach(([k,n])=>{let b=document.createElement('button');b.className='chip'+(active.has(k)?' on':'');b.textContent=n;b.onclick=()=>{active.has(k)?active.delete(k):active.add(k);b.classList.toggle('on');transform()};box.appendChild(b)}); input.value='CipherForge is awake. Feed it language and let the alphabet grow teeth.'; transform()}
+input.oninput=transform; power.oninput=transform; mode.onchange=transform; $('#clear').onclick=()=>{input.value='';transform();input.focus()}; $('#copy').onclick=async()=>{await navigator.clipboard.writeText(output.textContent);stats.textContent='copied to clipboard'}; document.querySelectorAll('.preset').forEach(b=>b.onclick=()=>{input.value=b.dataset.p;transform()}); boot();
+</script>
+</body>
+</html>
